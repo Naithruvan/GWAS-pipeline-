@@ -1,0 +1,77 @@
+
+#Pipeline Developed by Dr. Varun Sharma
+## email: sharmavarun840@gmail.com
+#####
+
+
+https://plink.readthedocs.io/en/latest/GWAS/
+
+
+
+Frequnecy filter
+
+plink --file hvoto --make-bed --mind 0.05 --maf 0.05 --geno 0.1 --hwe 1e-6 --recode --out gwasclean
+
+HWE filter again
+
+plink --bfile gwasclean --hwe 1e-5 --make-bed --out gwashwe
+
+Remove all first-degree relations
+
+Copy paste file from HWE bed files in plink 2 
+
+plink2 --bfile gwashwe --king-cutoff 0.177 --make-bed --out ft_ped
+
+
+Linkage Disequilibrium
+
+plink2 --bfile ft_ped --indep-pairwise 1500 150 0.7 --allow-no-sex --no-parents
+
+
+This will remove LD variants and some samples which are relative
+
+
+This will extract samples that are of good quality prunr in
+
+
+plink2 --bfile ft_ped --extract plink2.prune.in --make-bed --out ft_ld2
+
+
+
+
+PCA
+
+plink2 --bfile ft_ld --pca --allow-no-sex --no-parents
+
+
+
+Association
+
+plink2 --bfile ft_ld --glm allow-no-covars --ci 0.95 --adjust 
+
+
+plink --file gwasclean --keep-allele-order --allow-no-sex --assoc --ci 0.95
+or
+
+plink2 --bfile ft_ld --glm --ci 0.95 --adjust
+
+plink--bfile ft_ld --keep-allele-order --assoc --ci 0.95 --adjust
+
+
+To make association file in Plink 1.9
+
+
+plink2--bfile ft_ld --score plink.PHENO1.glm.logistic.hybrid 2 6 10 header sum
+or
+plink --bfile ft_ld --lasso
+$ plink
+--bfile ft_ld --score plink.lasso 2 header sum
+The
+
+to make manhattan plot and qq plot
+WG viewer or Haploview or R packages 
+
+plink --noweb --bfile myfile --maf 0.01 --geno 0.2 --assoc --ci 0.95 --allow-no-sex --out myfileassoc
+
+
+
